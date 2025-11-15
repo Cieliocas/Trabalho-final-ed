@@ -1,6 +1,6 @@
 import time
 import re
-from collections import deque, Counter, OrderedDict, defaultdict
+from collections import deque, namedtuple, defaultdict
 import matplotlib.pyplot as plt
 
 #Ler aquivo
@@ -11,9 +11,10 @@ def ler_arquivo(file):
 
     palavras = [p for p in re.split(padrao, arquivo) if p]
     return palavras
+
 #Calcula o tempo da inserção de cada collections:
 def tempo_insercao(words, estrutura):
-    init = time.time()
+    init = time.perf_counter()
 
     if estrutura == 'list':
         tipoEstrutura = list()
@@ -36,21 +37,22 @@ def tempo_insercao(words, estrutura):
             tipoEstrutura.append(w)
 
     elif estrutura == 'defaultdict':
-        tipoEstrutura = defaultdict(list)
+        tipoEstrutura = defaultdict(int)
         for w in words:
-            tipoEstrutura[w].append(1)
+            tipoEstrutura[w] += 1
 
-    elif estrutura == 'tuple':
-        tipoEstrutura = tuple()
+    elif estrutura == 'namedtuple':
+        tipoEstrutura = list()
+        tipo = namedtuple('Estrutura', ['Valor'])
         for w in words:
-            list_temp = list(tipoEstrutura)
-            list_temp.append(w)
-            tipoEstrutura = tuple(list_temp)
-    end = time.time()
+            obj = tipo(w)
+            tipoEstrutura.append(obj)
+
+    end = time.perf_counter()
     return f"{end - init:.3f}"
 
 word = ler_arquivo('leipzig100k.txt')
-estruturas = ['tuple', 'list', 'set', 'dict', 'deque', 'defaultdict']
+estruturas = ['list', 'set', 'dict', 'deque', 'defaultdict', 'namedtuple']
 tempos = dict()
 
 for estrutura in estruturas:
